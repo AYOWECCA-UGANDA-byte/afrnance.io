@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afrnance - Empowering Rural Finance</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.0/web3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: #fccd04;
+        }
+
+        .connect-wallet-btn {
+            background: linear-gradient(45deg, #fccd04, #ff6b35);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .connect-wallet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .cta-btn {
+            background: linear-gradient(45deg, #fccd04, #ff6b35);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+        }
+
+        .cta-btn.secondary {
+            background: transparent;
+            border: 2px solid white;
+        }
+
+        .features {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 4rem 0;
+            color: #333;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #4a5568;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .dapp-interface {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 4rem 0;
+            color: white;
+        }
+
+        .dapp-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-nav {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 5px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            min-width: 120px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(45deg, #fccd04, #ff6b35);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .wallet-status {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .balance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .balance-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .balance-card h4 {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .balance-amount {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .transaction-btn {
+            background: linear-gradient(45deg, #fccd04, #ff6b35);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .transaction-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .transaction-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .kyc-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 4rem 0;
+        }
+
+        .kyc-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .kyc-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .kyc-step {
+            padding: 1.5rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-weight: bold;
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 3rem 0 1rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #fccd04;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            line-height: 1.8;
+        }
+
+        .footer-section a:hover {
+            color: #fccd04;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            color: white;
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+        }
+
+        .notification.error {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-nav {
+                flex-direction: column;
+            }
+            
+            .nav-links {
+                margin-top: 1rem;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">🌾 Afrnance</div>
+                <div class="nav-links">
+                    <a href="#home" class="nav-link">Home</a>
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#dapp" class="nav-link">DApp</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <button class="connect-wallet-btn" onclick="connectWallet()">
+                        <span id="wallet-status">Connect Wallet</span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Empowering Rural Finance in Uganda</h1>
+            <p>Connecting farmers and women's saving groups to the global economy through Celo and GoodDollar</p>
+            <div class="cta-buttons">
+                <button class="cta-btn" onclick="openDApp()">Launch DApp</button>
+                <a href="#features" class="cta-btn secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <h2>Transforming Rural Finance</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Multi-Token Support</h3>
+                    <p>Send, receive, and swap CELO, cUSD, USDC, and USDT seamlessly. Convert to Ugandan Shillings with real-time rates.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎁</div>
+                    <h3>GoodDollar UBI</h3>
+                    <p>Claim Universal Basic Income through G$ tokens. Save and earn while supporting financial inclusion.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Data Bundle Exchange</h3>
+                    <p>Exchange G$ tokens for mobile data bundles at 95%+ discount rates. Stay connected affordably.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏦</div>
+                    <h3>Savings Groups</h3>
+                    <p>Create and manage women's saving groups with transparent blockchain transactions and automatic distributions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Superfluid Streaming</h3>
+                    <p>Receive continuous payment streams and rewards through Superfluid protocol integration.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3>Secure & Compliant</h3>
+                    <p>Complete KYC verification for security. Compatible with MetaMask and GoodDollar wallets.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dapp-interface" id="dapp">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 2rem;">Afrnance DApp Interface</h2>
+            <div class="dapp-container">
+                <div class="wallet-status">
+                    <div id="connection-status">Please connect your wallet to continue</div>
+                    <div id="user-address" style="display: none; font-family: monospace; font-size: 0.9rem; margin-top: 0.5rem;"></div>
+                </div>
+
+                <div class="balance-grid" id="balance-section" style="display: none;">
+                    <div class="balance-card">
+                        <h4>CELO</h4>
+                        <div class="balance-amount" id="celo-balance">0.00</div>
+                    </div>
+                    <div class="balance-card">
+                        <h4>cUSD</h4>
+                        <div class="balance-amount" id="cusd-balance">0.00</div>
+                    </div>
+                    <div class="balance-card">
+                        <h4>G$ Token</h4>
+                        <div class="balance-amount" id="gd-balance">0.00</div>
+                    </div>
+                    <div class="balance-card">
+                        <h4>UGX Value</h4>
+                        <div class="balance-amount" id="ugx-value">0 UGX</div>
+                    </div>
+                </div>
+
+                <div class="tab-nav">
+                    <button class="tab-btn active" onclick="switchTab('send')">Send</button>
+                    <button class="tab-btn" onclick="switchTab('swap')">Swap</button>
+                    <button class="tab-btn" onclick="switchTab('claim')">Claim UBI</button>
+                    <button class="tab-btn" onclick="switchTab('data')">Buy Data</button>
+                    <button class="tab-btn" onclick="switchTab('savings')">Savings</button>
+                </div>
+
+                <div id="send-tab" class="tab-content active">
+                    <h3 style="margin-bottom: 1rem;">Send Tokens</h3>
+                    <div class="form-group">
+                        <label>Token</label>
+                        <select id="send-token">
+                            <option value="celo">CELO</option>
+                            <option value="cusd">cUSD</option>
+                            <option value="usdc">USDC</option>
+                            <option value="gd">G$ Token</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Amount</label>
+                            <input type="number" id="send-amount" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>UGX Equivalent</label>
+                            <input type="text" id="send-ugx" placeholder="0 UGX" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Recipient Address</label>
+                        <input type="text" id="send-address" placeholder="0x... or phone number">
+                    </div>
+                    <button class="transaction-btn" onclick="sendTokens()">Send Tokens</button>
+                </div>
+
+                <div id="swap-tab" class="tab-content">
+                    <h3 style="margin-bottom: 1rem;">Token Swap</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>From Token</label>
+                            <select id="swap-from">
+                                <option value="celo">CELO</option>
+                                <option value="cusd">cUSD</option>
+                                <option value="gd">G$ Token</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>To Token</label>
+                            <select id="swap-to">
+                                <option value="cusd">cUSD</option>
+                                <option value="celo">CELO</option>
+                                <option value="ugx">UGX (Fiat)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Amount</label>
+                            <input type="number" id="swap-amount" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Estimated Receive</label>
+                            <input type="text" id="swap-receive" placeholder="0.00" readonly>
+                        </div>
+                    </div>
+                    <button class="transaction-btn" onclick="swapTokens()">Swap Tokens</button>
+                </div>
+
+                <div id="claim-tab" class="tab-content">
+                    <h3 style="margin-bottom: 1rem;">Claim UBI (G$ Tokens)</h3>
+                    <div style="text-align: center; padding: 2rem; background: rgba(255,255,255,0.05); border-radius: 15px; margin-bottom: 1rem;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎁</div>
+                        <h4>Available to Claim</h4>
+                        <div style="font-size: 2rem; font-weight: bold; color: #fccd04; margin: 1rem 0;" id="claimable-amount">12.50 G$</div>
+                        <p style="opacity: 0.8; font-size: 0.9rem;">≈ 45,000 UGX</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Claim Method</label>
+                        <select id="claim-method">
+                            <option value="face">Face Verification</option>
+                            <option value="phone">Phone Verification</option>
+                            <option value="social">Social Verification</option>
+                        </select>
+                    </div>
+                    <button class="transaction-btn" onclick="claimUBI()">Claim G$ UBI</button>
+                    <p style="text-align: center; margin-top: 1rem; opacity: 0.8; font-size: 0.9rem;">
+                        Next claim available in: <span id="next-claim">23h 45m</span>
+                    </p>
+                </div>
+
+                <div id="data-tab" class="tab-content">
+                    <h3 style="margin-bottom: 1rem;">Buy Data Bundles</h3>
+                    <div class="form-group">
+                        <label>Mobile Network</label>
+                        <select id="network-provider">
+                            <option value="mtn">MTN Uganda</option>
+                            <option value="airtel">Airtel Uganda</option>
+                            <option value="utl">Uganda Telecom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="phone-number" placeholder="+256 700 000 000">
+                    </div>
+                    <div class="form-group">
+                        <label>Data Package</label>
+                        <select id="data-package" onchange="updateDataCost()">
+                            <option value="1gb">1GB - 7 Days (2.5 G$ | 95% discount)</option>
+                            <option value="3gb">3GB - 30 Days (6.0 G$ | 96% discount)</option>
+                            <option value="10gb">10GB - 30 Days (15.0 G$ | 97% discount)</option>
+                        </select>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Regular Price:</span>
+                            <span style="text-decoration: line-through; opacity: 0.7;" id="regular-price">50,000 UGX</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Your Price (G$):</span>
+                            <span style="color: #fccd04; font-weight: bold;" id="gd-price">2.5 G$</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; color: #48bb78; font-weight: bold;">
+                            <span>You Save:</span>
+                            <span id="savings">95% (47,500 UGX)</span>
+                        </div>
+                    </div>
+                    <button class="transaction-btn" onclick="buyDataBundle()">Purchase Data Bundle</button>
+                </div>
+
+                <div id="savings-tab" class="tab-content">
+                    <h3 style="margin-bottom: 1rem;">Women's Saving Groups</h3>
+                    <div class="form-group">
+                        <label>Action</label>
+                        <select id="savings-action" onchange="toggleSavingsForm()">
+                            <option value="join">Join Existing Group</option>
+                            <option value="create">Create New Group</option>
+                            <option value="contribute">Make Contribution</option>
+                        </select>
+                    </div>
+                    
+                    <div id="join-form">
+                        <div class="form-group">
+                            <label>Group Code</label>
+                            <input type="text" id="group-code" placeholder="Enter group invitation code">
+                        </div>
+                    </div>
+
+                    <div id="create-form" style="display: none;">
+                        <div class="form-group">
+                            <label>Group Name</label>
+                            <input type="text" id="group-name" placeholder="Kampala Women Savers">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Contribution Amount (G$)</label>
+                                <input type="number" id="contribution-amount" placeholder="10.00" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Frequency</label>
+                                <select id="contribution-frequency">
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="contribute-form" style="display: none;">
+                        <div class="form-group">
+                            <label>Your Groups</label>
+                            <select id="user-groups">
+                                <option value="group1">Kampala Women Savers</option>
+                                <option value="group2">Farmers United Group</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Contribution Amount (G$)</label>
+                            <input type="number" id="contribute-amount" placeholder="10.00" step="0.01">
+                        </div>
+                    </div>
+
+                    <button class="transaction-btn" onclick="handleSavingsAction()">Execute Action</button>
+                    
+                    <div style="margin-top: 2rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px;">
+                        <h4 style="margin-bottom: 1rem;">Your Savings Summary</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: bold; color: #fccd04;">125.0 G$</div>
+                                <div style="font-size: 0.9rem; opacity: 0.8;">Total Saved</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: bold; color:
